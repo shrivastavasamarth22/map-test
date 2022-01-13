@@ -1,7 +1,8 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from "react-native";
+import { MaterialIcons } from '@expo/vector-icons';
 
-const ListItem = ({position, name, qty, onPress}) => {
+const ListItem = ({position, name, qty, onPress, onPress2}) => {
     return (
         <TouchableOpacity
             style={styles.container}
@@ -13,9 +14,15 @@ const ListItem = ({position, name, qty, onPress}) => {
             <Text style={styles.text}>
                 {name}
             </Text>
-            <Text style={[styles.text, { marginRight: 0 }]}>
+            <Text style={[styles.text, {marginRight: 0}]}>
                 {qty}
             </Text>
+            <TouchableOpacity
+                style={styles.buttonStyle}
+                onPress={onPress2}
+            >
+                <MaterialIcons name="delete" size={28} color="black" />
+            </TouchableOpacity>
         </TouchableOpacity>
     )
 }
@@ -31,6 +38,11 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: 'black',
         marginRight: 10
+    },
+    buttonStyle: {
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 })
 

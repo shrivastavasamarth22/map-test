@@ -1,7 +1,7 @@
-import React, {useState, useRef, useEffect} from 'react';
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, Image, FlatList, Keyboard} from "react-native";
+import React, {useEffect, useRef, useState} from 'react';
+import {FlatList, Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View, ToastAndroid} from "react-native";
 import {KeyboardAccessoryView} from "react-native-keyboard-accessory";
-import {Entypo} from '@expo/vector-icons';
+import {FontAwesome} from '@expo/vector-icons';
 import {ListItem} from "../components";
 
 const icon = require('../assets/scales.png')
@@ -15,6 +15,8 @@ const ListScreen = () => {
     const [text, onChangeText] = useState('');
     const [text2, onChangeText2] = useState('');
     const [type, setType] = useState('name');
+    const [mode, setMode] = useState('write');
+    const [editId, setEditId] = useState(null);
 
     const [data, setData] = useState([
             {
@@ -45,14 +47,66 @@ const ListScreen = () => {
 
     const [keyboardStatus, setKeyboardStatus] = useState(undefined);
     const _keyboardDidShow = () => setKeyboardStatus('Keyboard Shown');
-    const _keyboardDidHide = () => setKeyboardStatus('Keyboard Hidden');
+    const _keyboardDidHide = () => setKeyboardStatus('Keyboard Hidden'); 
 
-    const submitToList = (name, qty) => {
-        setData([...data, {
-            id: randomId(),
-            name,
-            qty
-        }])
+    const goToQty = () => {
+        if (text === '') {
+            ToastAndroid.showWithGravity(
+                "Product cannot be left blank",
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER
+            )
+        } else {
+            setType('unit')
+        }
+    }
+
+    const onEdit = (id) => {
+        setMode('edit');
+        setEditId(id);
+        const item = data.find(i => i.id === id);
+        onChangeText(item.name);
+        onChangeText2(item.qty);
+    }
+
+    const submitToList = (name, qty,) => {
+        if (mode === 'edit') {
+            const item = data.find(i => i.id === editId);
+            const index = data.findIndex(i => i.id === editId);
+
+            const newList = data;
+
+            item.name = name;
+            item.qty = qty;
+
+            newList[index] = item;
+        } else {
+            if (qty === '') {
+                ToastAndroid.showWithGravity(
+                    "Quantity cannot be left blank",
+                    ToastAndroid.CENTER,
+                    ToastAndroid.SHORT
+                )
+            } else {
+                setData([...data, {
+                    id: randomId(),
+                    name,
+                    qty
+                }])
+            }
+        }
+
+        setType('name');
+        setMode('write');
+        setEditId(null);
+        onChangeText('');
+        onChangeText2('');
+
+    }
+
+    const deleteFromList = (id) => {
+        const newList = data.filter(item => item.id !== id);
+        setData(newList);
     }
 
     return (
@@ -65,9 +119,10 @@ const ListScreen = () => {
                     renderItem={({item, index}) => (
                         <ListItem
                             position={index + 1}
-                            name={item.name + "-"}
+                            name={item.name}
                             qty={item.qty}
-                            onPress={() => console.log(item.id)}
+                            onPress={() => onEdit(item.id)}
+                            onPress2={() => deleteFromList(item.id)}
                         />
                     )}
                 />
@@ -86,7 +141,7 @@ const ListScreen = () => {
                             />
                             <TouchableOpacity
                                 style={styles.moveButtonStyle}
-                                onPress={() => setType("unit")}
+                                onPress={goToQty}
                             >
                                 <Image
                                     source={icon}
@@ -106,9 +161,9 @@ const ListScreen = () => {
                             />
                             <TouchableOpacity
                                 style={styles.moveButtonStyle}
-                                onPress={() => setType('name')}
+                                onPress={() => submitToList(text, text2)}
                             >
-                                <Entypo name="chevron-left" size={28} color="white"/>
+                                <FontAwesome name="send" size={28} color="white" />
                             </TouchableOpacity>
                         </>
                 }
@@ -118,6 +173,12 @@ const ListScreen = () => {
                 {
                     type === 'unit'
                         ? <View style={styles.keyboardViewStyle}>
+                            <TouchableOpacity
+                                style={styles.buttonStyle}
+                                onPress={() => addUnit("₹")}
+                            >
+                                <Text style={styles.buttonText}>₹</Text>
+                            </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.buttonStyle}
                                 onPress={() => addUnit("khula")}

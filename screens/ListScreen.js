@@ -15,8 +15,6 @@ const ListScreen = () => {
     const [text, onChangeText] = useState('');
     const [text2, onChangeText2] = useState('');
     const [type, setType] = useState('name');
-    const [mode, setMode] = useState('write');
-    const [editId, setEditId] = useState(null);
 
     const [data, setData] = useState([
             {
@@ -47,7 +45,7 @@ const ListScreen = () => {
 
     const [keyboardStatus, setKeyboardStatus] = useState(undefined);
     const _keyboardDidShow = () => setKeyboardStatus('Keyboard Shown');
-    const _keyboardDidHide = () => setKeyboardStatus('Keyboard Hidden'); 
+    const _keyboardDidHide = () => setKeyboardStatus('Keyboard Hidden');
 
     const goToQty = () => {
         if (text === '') {
@@ -61,26 +59,7 @@ const ListScreen = () => {
         }
     }
 
-    const onEdit = (id) => {
-        setMode('edit');
-        setEditId(id);
-        const item = data.find(i => i.id === id);
-        onChangeText(item.name);
-        onChangeText2(item.qty);
-    }
-
     const submitToList = (name, qty,) => {
-        if (mode === 'edit') {
-            const item = data.find(i => i.id === editId);
-            const index = data.findIndex(i => i.id === editId);
-
-            const newList = data;
-
-            item.name = name;
-            item.qty = qty;
-
-            newList[index] = item;
-        } else {
             if (qty === '') {
                 ToastAndroid.showWithGravity(
                     "Quantity cannot be left blank",
@@ -94,14 +73,9 @@ const ListScreen = () => {
                     qty
                 }])
             }
-        }
-
         setType('name');
-        setMode('write');
-        setEditId(null);
         onChangeText('');
         onChangeText2('');
-
     }
 
     const deleteFromList = (id) => {
@@ -121,8 +95,7 @@ const ListScreen = () => {
                             position={index + 1}
                             name={item.name}
                             qty={item.qty}
-                            onPress={() => onEdit(item.id)}
-                            onPress2={() => deleteFromList(item.id)}
+                            onPress={() => deleteFromList(item.id)}
                         />
                     )}
                 />

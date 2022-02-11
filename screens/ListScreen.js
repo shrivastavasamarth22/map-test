@@ -111,6 +111,7 @@ const ListScreen = () => {
                                 placeholder={"Product Name"}
                                 onChangeText={(t) => onChangeText(t)}
                                 style={styles.inputStyle}
+                                keyboardType={'default'}
                             />
                             <TouchableOpacity
                                 style={styles.moveButtonStyle}
@@ -127,10 +128,10 @@ const ListScreen = () => {
                             <TextInput
                                 ref={input2Ref}
                                 value={text2}
-                                placeholder={"Quantity"}
-                                keyboardType={'decimal-pad'}
-                                onChangeText={(t) => onChangeText2(t)}
+                                placeholder={"Quantity - Unit"}
+                                onChangeText={t => onChangeText2(t)}
                                 style={styles.inputStyle}
+                                keyboardType={'decimal-pad'}
                             />
                             <TouchableOpacity
                                 style={styles.moveButtonStyle}
